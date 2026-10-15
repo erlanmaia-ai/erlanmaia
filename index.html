@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Prova Interativa – Ciências 9º Ano</title>
+  <style>
+    :root {
+      --bg: #f0f7ff;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --accent2: #16a34a;
+      --danger: #dc2626;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #bfdbfe;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(160deg, #dbeafe 0%, #eff6ff 45%, #f8fafc 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.55;
+      padding: 12px;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding-bottom: 40px; }
+    header { text-align: center; padding: 26px 12px 16px; }
+    header h1 {
+      font-size: clamp(1.25rem, 4vw, 1.65rem);
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 6px;
+    }
+    header p { color: var(--muted); font-size: 0.95rem; }
+    .badge {
+      display: inline-block;
+      background: #bfdbfe;
+      color: #1e40af;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-top: 12px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+    }
+
+    /* ===== GUIAS (ABAS) ===== */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: #dbeafe;
+      padding: 5px;
+      border-radius: 14px;
+      margin-top: 8px;
+    }
+    .tabs.hidden { display: none; }
+    .tab-btn {
+      flex: 1;
+      min-width: 0;
+      padding: 11px 12px;
+      background: transparent;
+      color: #1e40af;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: #1e40af;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.18);
+    }
+
+    /* ===== RANKING ===== */
+    .stats {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      flex: 1;
+      min-width: 90px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat b { display: block; font-size: 1.3rem; color: #1e40af; }
+    .stat span { font-size: 0.75rem; color: var(--muted); }
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
+    table.ranking { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 480px; }
+    table.ranking th {
+      background: #dbeafe;
+      color: #1e40af;
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    table.ranking td { padding: 10px 12px; border-top: 1px solid #e2e8f0; }
+    table.ranking tr:nth-child(even) td { background: #f8fafc; }
+    .pos { font-weight: 700; text-align: center; width: 44px; }
+    .nota-ok { color: var(--accent2); font-weight: 700; }
+    .nota-mid { color: #d97706; font-weight: 700; }
+    .nota-low { color: var(--danger); font-weight: 700; }
+    .empty-msg { text-align: center; color: var(--muted); padding: 30px 10px; }
+    .small-note { font-size: 0.8rem; color: var(--muted); margin-top: 12px; }
+
+    .progress-wrap { margin-bottom: 14px; }
+    .progress-bar { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+    .progress-text { font-size: 0.82rem; color: var(--muted); margin-top: 6px; text-align: right; }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .student-name-display {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e40af;
+      background: #dbeafe;
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+    .timer-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      color: #92400e;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .timer-box.warning {
+      background: #fee2e2;
+      border-color: #dc2626;
+      color: #991b1b;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .q-num {
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .q-text { font-size: 1.1rem; font-weight: 560; margin-bottom: 14px; color: #0f172a; }
+    .q-img {
+      text-align: center;
+      margin: 14px 0 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow-x: auto;
+    }
+    .q-img svg { max-width: 100%; height: auto; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 13px 15px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      user-select: none;
+    }
+    .option:hover { border-color: #93c5fd; background: #eff6ff; }
+    .option.selected {
+      border-color: var(--accent);
+      background: #dbeafe;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .option input { display: none; }
+    .option.locked { cursor: not-allowed; }
+    .option.locked:not(.selected) { opacity: 0.6; }
+    .option.locked:not(.selected):hover { border-color: #e2e8f0; background: #f8fafc; }
+    .lock-note { font-size: 0.82rem; color: var(--muted); margin-top: 10px; text-align: right; }
+    .opt-letter {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .option.selected .opt-letter { background: var(--accent); color: #fff; }
+    .opt-text { flex: 1; padding-top: 3px; font-size: 1rem; }
+    .btn-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    button {
+      flex: 1;
+      min-width: 120px;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    button:active { transform: scale(0.97); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+    .btn-secondary { background: #e2e8f0; color: #334155; }
+    .btn-danger { background: #fee2e2; color: #991b1b; }
+    .btn-success {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+    }
+    .result-box { text-align: center; padding: 28px 16px; }
+    .result-box .score { font-size: 3.2rem; font-weight: 800; color: #2563eb; margin: 14px 0; }
+    .result-box .msg { font-size: 1.1rem; margin-bottom: 20px; color: #475569; }
+    .gabarito { text-align: left; margin-top: 24px; }
+    .gabarito h3 { margin-bottom: 12px; color: #1e40af; font-size: 1.05rem; }
+    .gab-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    .gab-item .status { font-weight: 700; margin-right: 6px; }
+    .status.ok { color: var(--accent2); }
+    .status.no { color: var(--danger); }
+    /* Todas as telas ficam ocultas até receberem .active */
+    .start-screen, .quiz-screen, .result-screen, .ranking-screen, .editor-screen, .login-screen { display: none; }
+    .start-screen.active, .quiz-screen.active, .result-screen.active, .ranking-screen.active, .editor-screen.active, .login-screen.active { display: block; }
+    .theme-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 16px 0; }
+    .theme-tags span {
+      background: #dbeafe;
+      color: #1e40af;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      color: #1e40af;
+      margin-bottom: 14px;
+    }
+    .name-field { margin-bottom: 16px; }
+    .name-field label { display: block; font-weight: 600; margin-bottom: 6px; color: #1e40af; font-size: 0.95rem; }
+    .name-field input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .name-field input:focus { border-color: #2563eb; }
+    .name-error { color: #dc2626; font-size: 0.88rem; margin-top: 6px; display: none; }
+    .name-error.show { display: block; }
+    .time-info { font-size: 0.88rem; color: var(--muted); text-align: center; margin-top: 10px; }
+    /* ===== EDITOR DE QUESTÕES ===== */
+    .field { margin-bottom: 18px; }
+    .field > label { display: block; font-weight: 600; margin-bottom: 6px; color: #1e40af; font-size: 0.95rem; }
+    .field .hint { font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+    .field input[type="text"], .field input[type="password"], .field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field textarea { resize: vertical; min-height: 84px; }
+    .field input[type="number"] {
+      width: 110px;
+      padding: 12px 14px;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .field input[type="number"]:focus { border-color: #2563eb; }
+    .qtd-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .qtd-row button { flex: none; min-width: 0; padding: 11px 16px; font-size: 0.9rem; }
+    .field input[type="text"]:focus, .field input[type="password"]:focus, .field textarea:focus { border-color: #2563eb; }
+    .field input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px dashed #93c5fd;
+      border-radius: 12px;
+      background: #eff6ff;
+      font-size: 0.9rem;
+    }
+    .img-preview { margin-top: 10px; text-align: center; }
+    .img-preview img { max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid #e2e8f0; }
+    .img-preview button { flex: none; min-width: 0; margin-top: 8px; padding: 8px 14px; font-size: 0.85rem; }
+    .alt-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 8px 10px;
+    }
+    .alt-row:has(input[type="radio"]:checked) { border-color: var(--accent2); background: #f0fdf4; }
+    .alt-row input[type="radio"] { width: 20px; height: 20px; accent-color: #16a34a; flex-shrink: 0; cursor: pointer; }
+    .alt-row .opt-letter { margin: 0; }
+    .alt-row input[type="text"] { flex: 1; border: none; background: transparent; padding: 8px 4px; border-radius: 0; }
+    .alt-row input[type="text"]:focus { border: none; }
+    .editor-msg { font-size: 0.9rem; margin-bottom: 10px; display: none; }
+    .editor-msg.show { display: block; }
+    .editor-msg.err { color: var(--danger); }
+    .editor-msg.ok { color: var(--accent2); font-weight: 600; }
+    .extra-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    .extra-item .extra-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .extra-item .extra-tema { font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase; }
+    .extra-item img { max-width: 160px; max-height: 110px; border-radius: 8px; margin: 8px 0; display: block; background: #fff; }
+    .extra-item.excluida { opacity: 0.55; }
+    .extra-item .tag { background: #dbeafe; color: #1e40af; border-radius: 999px; padding: 1px 9px; font-size: 0.7rem; margin-left: 4px; text-transform: none; }
+    .extra-item .tag.exc { background: #fee2e2; color: #991b1b; }
+    .acoes { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .btn-mini { flex: none; min-width: 0; padding: 7px 13px; font-size: 0.8rem; border-radius: 10px; background: #e2e8f0; color: #334155; }
+    .btn-mini.del { background: #fee2e2; color: #991b1b; }
+    .btn-mini.ok { background: #dcfce7; color: #166534; }
+    .extra-item ul { list-style: none; margin-top: 6px; }
+    .extra-item li.certa { color: var(--accent2); font-weight: 700; }
+    .extra-item .btn-del { flex: none; min-width: 0; padding: 6px 12px; font-size: 0.8rem; background: #fee2e2; color: #991b1b; border-radius: 10px; }
+    /* ===== MODAL DE SENHA ===== */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-bg.show { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 18px;
+      padding: 22px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    .modal-box h3 { color: #1e40af; margin-bottom: 6px; font-size: 1.1rem; }
+    .modal-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; }
+    footer { text-align: center; color: var(--muted); font-size: 0.75rem; margin-top: 28px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- GUIAS -->
+    <div class="tabs" id="tabBar">
+      <button class="tab-btn active" id="tabProva" onclick="openTab('prova')">📝 Prova</button>
+      <button class="tab-btn" id="tabRanking" onclick="openTab('resultados')">📊 Resultados</button>
+      <button class="tab-btn" id="tabEditor" onclick="openTab('questoes')">➕ Questões</button>
+    </div>
+
+    <!-- TELA INICIAL -->
+    <div id="startScreen" class="start-screen active">
+      <header>
+        <h1>🔬 Prova Interativa de Ciências</h1>
+        <p>9º Ano · Distribuição Eletrônica · Tabela Periódica · Ligações Químicas</p>
+        <div class="badge" id="badgeInfo">20 questões · 25 minutos · Embaralhadas a cada acesso</div>
+      </header>
+      <div class="card">
+        <div class="info-box">
+          Digite seu nome completo para começar. Cada nome só pode fazer a prova <strong>uma vez</strong> neste aparelho.
+          As questões e alternativas são embaralhadas automaticamente.
+        </div>
+
+        <div class="name-field">
+          <label for="studentName">Seu nome completo</label>
+          <input type="text" id="studentName" placeholder="Ex: Maria Silva Santos" maxlength="60" autocomplete="name" />
+          <div class="name-error" id="nameError">Este nome já realizou a prova neste aparelho.</div>
+        </div>
+
+        <div class="theme-tags">
+          <span>Distribuição eletrônica</span>
+          <span>Tabela periódica</span>
+          <span>Ligações químicas</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" id="btnStart" onclick="startQuiz()">Começar a prova</button>
+        </div>
+        <p class="time-info">⏱ Tempo disponível: 25 minutos</p>
+      </div>
+    </div>
+
+    <!-- TELA DO QUIZ -->
+    <div id="quizScreen" class="quiz-screen">
+      <div class="top-bar">
+        <div class="student-name-display" id="nameDisplay">Aluno</div>
+        <div class="timer-box" id="timerBox">
+          <span>⏱</span>
+          <span id="timerText">25:00</span>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-text" id="progressText">Questão 1 de 20</div>
+      </div>
+      <div class="card" id="questionCard"></div>
+      <div class="btn-row">
+        <button class="btn-secondary" id="btnPrev" onclick="prevQuestion()" disabled>← Anterior</button>
+        <button class="btn-primary" id="btnNext" onclick="nextQuestion()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- TELA DE RESULTADO -->
+    <div id="resultScreen" class="result-screen">
+      <div class="card result-box">
+        <h2 style="color:#1e40af">Resultado da prova</h2>
+        <p id="resultName" style="font-weight:600;color:#1e40af;margin-bottom:4px;"></p>
+        <div class="score" id="finalScore">0/20</div>
+        <p class="msg" id="finalMsg"></p>
+        <p id="timeUsed" style="color:#64748b;font-size:0.9rem;margin-bottom:16px;"></p>
+        <div class="info-box" style="text-align:left;font-size:0.88rem;">
+          Esta tentativa foi registrada. O mesmo nome não poderá refazer a prova neste aparelho.
+        </div>
+        <div class="btn-row" style="margin-top:18px;margin-bottom:8px;">
+          <button class="btn-primary" onclick="novoAluno()">NOVO ALUNO</button>
+        </div>
+        <div class="gabarito" id="gabaritoBox"></div>
+      </div>
+    </div>
+
+    <!-- TELA DE RESULTADOS (GUIA) -->
+    <div id="rankingScreen" class="ranking-screen">
+      <header>
+        <h1>📊 Resultados da turma</h1>
+        <p>Nome, nota e tempo de realização de cada aluno</p>
+      </header>
+      <div class="card">
+        <div class="stats" id="statsBox"></div>
+        <div id="rankingBox"></div>
+        <p class="small-note">
+          Ordenado por maior nota e, em caso de empate, pelo menor tempo.
+          Os registros ficam salvos apenas neste aparelho/navegador.
+        </p>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="exportCSV()">⬇ Exportar CSV</button>
+          <button class="btn-danger" onclick="limparRegistros()">🗑 Limpar registros</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGIN DO PROFESSOR (acesso à guia Questões) -->
+    <div id="loginScreen" class="login-screen">
+      <header>
+        <h1>🔒 Acesso restrito</h1>
+        <p>Entre com seu login e senha para adicionar questões</p>
+      </header>
+      <div class="card">
+        <div class="field">
+          <label for="loginUser">Login</label>
+          <input type="text" id="loginUser" maxlength="40" autocomplete="username" autocapitalize="off" />
+        </div>
+        <div class="field">
+          <label for="loginPass">Senha</label>
+          <input type="password" id="loginPass" maxlength="60" autocomplete="current-password" />
+        </div>
+        <div class="editor-msg" id="loginMsg"></div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button class="btn-secondary" onclick="openTab('prova')">Cancelar</button>
+          <button class="btn-primary" onclick="entrarProfessor()">Entrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TELA DE NOVAS QUESTÕES (GUIA) -->
+    <div id="editorScreen" class="editor-screen">
+      <header>
+        <h1>➕ Adicionar questões</h1>
+        <p>As novas questões entram automaticamente na prova</p>
+        <div class="btn-row" style="justify-content:center;margin-top:10px;">
+          <button class="btn-secondary" style="flex:none;padding:8px 18px;font-size:0.85rem;" onclick="sairProfessor()">🔓 Sair</button>
+        </div>
+      </header>
+      <div class="card" id="qtdCard">
+        <h3 style="color:#1e40af;margin-bottom:4px;font-size:1.05rem;">⚙️ Questões por aluno</h3>
+        <p class="small-note" style="margin:0 0 12px;">Fixe quantas questões cada aluno recebe, não importa quantas existam no banco. As questões são sorteadas a cada aluno.</p>
+        <div class="field" style="margin-bottom:10px;">
+          <div class="qtd-row">
+            <input type="number" id="qtdInput" min="1" step="1" placeholder="Ex: 20" />
+            <button class="btn-primary" onclick="fixarQtd()">Fixar valor</button>
+            <button class="btn-secondary" onclick="usarTodasQuestoes()">Usar todas</button>
+          </div>
+        </div>
+        <div class="editor-msg" id="qtdMsg"></div>
+        <p id="qtdStatus" style="font-size:0.9rem;color:#1e40af;font-weight:600;"></p>
+      </div>
+
+      <div class="card" id="somCard">
+        <h3 style="color:#1e40af;margin-bottom:4px;font-size:1.05rem;">🔔 Feedback sonoro</h3>
+        <p class="small-note" style="margin:0 0 12px;">Toca um sino quando o aluno acerta e uma buzina quando erra. Com o som ativado, a resposta fica travada depois de escolhida (senão o aluno poderia trocar até ouvir o sino).</p>
+        <div class="qtd-row" style="margin-bottom:10px;">
+          <button class="btn-primary" id="btnSom" onclick="alternarSom()">Desativar som</button>
+          <button class="btn-secondary" onclick="tocarSino()">🔔 Testar sino</button>
+          <button class="btn-secondary" onclick="tocarBuzina()">📯 Testar buzina</button>
+        </div>
+        <p id="somStatus" style="font-size:0.9rem;color:#1e40af;font-weight:600;"></p>
+      </div>
+
+      <div class="card" id="formCard">
+        <h3 id="formTitulo" style="color:#1e40af;margin-bottom:14px;font-size:1.05rem;">Nova questão</h3>
+        <div class="field">
+          <label for="qTema">Tema <span class="hint">(opcional)</span></label>
+          <input type="text" id="qTema" list="temasList" maxlength="40" placeholder="Ex: Ligações químicas" />
+          <datalist id="temasList">
+            <option value="Distribuição eletrônica"></option>
+            <option value="Tabela periódica"></option>
+            <option value="Ligações químicas"></option>
+          </datalist>
+        </div>
+
+        <div class="field">
+          <label for="qTexto">Pergunta</label>
+          <textarea id="qTexto" rows="3" maxlength="500" placeholder="Digite o enunciado da questão"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="qImg">Figura ou imagem <span class="hint">(opcional · PNG, JPG, GIF, WEBP ou SVG)</span></label>
+          <input type="file" id="qImg" accept="image/*" onchange="carregarImagem(this)" />
+          <div class="img-preview" id="imgPreview"></div>
+        </div>
+
+        <div class="field">
+          <label>Alternativas <span class="hint">(marque o círculo da resposta correta)</span></label>
+          <label class="alt-row"><input type="radio" name="qCorreta" value="0" checked /><span class="opt-letter">A</span><input type="text" id="qAlt0" maxlength="150" placeholder="Alternativa A" /></label>
+          <label class="alt-row"><input type="radio" name="qCorreta" value="1" /><span class="opt-letter">B</span><input type="text" id="qAlt1" maxlength="150" placeholder="Alternativa B" /></label>
+          <label class="alt-row"><input type="radio" name="qCorreta" value="2" /><span class="opt-letter">C</span><input type="text" id="qAlt2" maxlength="150" placeholder="Alternativa C" /></label>
+          <label class="alt-row"><input type="radio" name="qCorreta" value="3" /><span class="opt-letter">D</span><input type="text" id="qAlt3" maxlength="150" placeholder="Alternativa D" /></label>
+        </div>
+
+        <div class="editor-msg" id="editorMsg"></div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button class="btn-secondary" id="btnCancelEdit" style="display:none" onclick="sairEdicao()">Cancelar edição</button>
+          <button class="btn-secondary" onclick="limparFormulario()">Limpar</button>
+          <button class="btn-primary" id="btnSalvar" onclick="salvarQuestao()">Salvar questão</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:#1e40af;margin-bottom:4px;font-size:1.05rem;">Questões da prova (<span id="extraCount">0</span> ativas)</h3>
+        <p class="small-note" style="margin:0 0 12px;">Edite, duplique ou exclua qualquer questão, inclusive as originais. Questões originais excluídas ou editadas podem ser restauradas.</p>
+        <div id="extraList"></div>
+        <p class="small-note">As alterações ficam salvas apenas neste aparelho/navegador.</p>
+      </div>
+    </div>
+
+    <!-- MODAL: CONFIRMAR SENHA -->
+    <div class="modal-bg" id="senhaModal">
+      <div class="modal-box">
+        <h3>🔒 Confirme a senha</h3>
+        <p id="senhaModalTexto">Digite a senha do professor para continuar.</p>
+        <div class="field" style="margin-bottom:10px;">
+          <input type="password" id="senhaModalInput" maxlength="60" autocomplete="current-password" />
+        </div>
+        <div class="editor-msg" id="senhaModalMsg"></div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button class="btn-secondary" onclick="fecharSenhaModal()">Cancelar</button>
+          <button class="btn-primary" onclick="confirmarSenhaModal()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>Prova para 9º ano · Nome + cronômetro · Questões embaralhadas · HTML + JS puro</footer>
+  </div>
+
+  <script>
+    /* ========== CONFIGURAÇÃO ========== */
+    const TEMPO_TOTAL_SEGUNDOS = 25 * 60; // 25 minutos
+    const STORAGE_KEY = 'prova_ciencias_9ano_nomes';
+
+    /* ===== ACESSO DO PROFESSOR (guia "Questões") =====
+       Preencha o login e a senha abaixo quando for cadastrar.
+       Enquanto estiverem vazios, a guia Questões fica bloqueada. */
+    const PROF_LOGIN = 'erlanmaia';
+    const PROF_SENHA = '12345';
+
+    /* ========== BANCO DE QUESTÕES – NÍVEL 9º ANO ========== */
+    const questionsBank = [
+      {
+        id: 1,
+        tema: "Distribuição eletrônica",
+        texto: "O número atômico do sódio é 11. Isso significa que o átomo de sódio tem quantos prótons e quantos elétrons (quando neutro)?",
+        img: null,
+        opcoes: [
+          "11 prótons e 11 elétrons",
+          "11 prótons e 12 elétrons",
+          "11 prótons e 10 elétrons",
+          "12 prótons e 11 elétrons"
+        ],
+        correta: 0
+      },
+      {
+        id: 2,
+        tema: "Distribuição eletrônica",
+        texto: "Observe o desenho dos níveis de energia. Em qual camada (nível) os elétrons de valência do sódio (Z = 11) se encontram?",
+        img: `<svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="150" cy="70" r="18" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="138" y="75" fill="#92400e" font-size="13" font-weight="700" font-family="system-ui">Na</text>
+          <circle cx="150" cy="70" r="40" fill="none" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="150" cy="70" r="62" fill="none" stroke="#8b5cf6" stroke-width="2"/>
+          <circle cx="150" cy="70" r="84" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="4 3"/>
+          <circle cx="190" cy="70" r="6" fill="#3b82f6"/>
+          <circle cx="110" cy="70" r="6" fill="#3b82f6"/>
+          <circle cx="180" cy="40" r="6" fill="#8b5cf6"/>
+          <circle cx="120" cy="40" r="6" fill="#8b5cf6"/>
+          <circle cx="180" cy="100" r="6" fill="#8b5cf6"/>
+          <circle cx="120" cy="100" r="6" fill="#8b5cf6"/>
+          <circle cx="150" cy="28" r="6" fill="#8b5cf6"/>
+          <circle cx="150" cy="112" r="6" fill="#8b5cf6"/>
+          <circle cx="210" cy="50" r="6" fill="#8b5cf6"/>
+          <circle cx="90" cy="50" r="6" fill="#8b5cf6"/>
+          <circle cx="234" cy="70" r="7" fill="#16a34a"/>
+          <text x="20" y="25" fill="#3b82f6" font-size="12" font-family="system-ui">K (2e⁻)</text>
+          <text x="20" y="45" fill="#8b5cf6" font-size="12" font-family="system-ui">L (8e⁻)</text>
+          <text x="20" y="65" fill="#16a34a" font-size="12" font-family="system-ui">M (1e⁻)</text>
+        </svg>`,
+        opcoes: [
+          "Camada M (3ª camada)",
+          "Camada K (1ª camada)",
+          "Camada L (2ª camada)",
+          "Camada N (4ª camada)"
+        ],
+        correta: 0
+      },
+      {
+        id: 3,
+        tema: "Distribuição eletrônica",
+        texto: "A distribuição eletrônica do oxigênio (Z = 8) em camadas é:",
+        img: null,
+        opcoes: [
+          "K = 2 e L = 6",
+          "K = 2 e L = 8",
+          "K = 8 e L = 2",
+          "K = 2, L = 4 e M = 2"
+        ],
+        correta: 0
+      },
+      {
+        id: 4,
+        tema: "Distribuição eletrônica",
+        texto: "Os elétrons que participam das ligações químicas são os da última camada. Como eles são chamados?",
+        img: null,
+        opcoes: [
+          "Elétrons de valência",
+          "Elétrons do núcleo",
+          "Prótons de valência",
+          "Nêutrons livres"
+        ],
+        correta: 0
+      },
+      {
+        id: 5,
+        tema: "Distribuição eletrônica",
+        texto: "Um átomo de cloro (Z = 17) ganha 1 elétron e vira o íon Cl⁻. Quantos elétrons esse íon passa a ter?",
+        img: null,
+        opcoes: [
+          "18 elétrons",
+          "17 elétrons",
+          "16 elétrons",
+          "19 elétrons"
+        ],
+        correta: 0
+      },
+      {
+        id: 6,
+        tema: "Tabela periódica",
+        texto: "Na tabela periódica, os elementos estão organizados em ordem crescente de:",
+        img: null,
+        opcoes: [
+          "Número atômico",
+          "Massa do elétron",
+          "Número de nêutrons",
+          "Ponto de fusão"
+        ],
+        correta: 0
+      },
+      {
+        id: 7,
+        tema: "Tabela periódica",
+        texto: "Olhe o trecho da tabela periódica. O elemento flúor (F) está no mesmo período de qual elemento?",
+        img: `<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="15" width="50" height="50" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="26" y="47" fill="#92400e" font-size="20" font-weight="700" font-family="system-ui">C</text>
+          <text x="28" y="78" fill="#92400e" font-size="11" font-family="system-ui">6</text>
+          <rect x="70" y="15" width="50" height="50" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="84" y="47" fill="#166534" font-size="20" font-weight="700" font-family="system-ui">N</text>
+          <text x="88" y="78" fill="#166534" font-size="11" font-family="system-ui">7</text>
+          <rect x="130" y="15" width="50" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+          <text x="144" y="47" fill="#1e40af" font-size="20" font-weight="700" font-family="system-ui">O</text>
+          <text x="148" y="78" fill="#1e40af" font-size="11" font-family="system-ui">8</text>
+          <rect x="190" y="15" width="50" height="50" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="2.5"/>
+          <text x="206" y="47" fill="#9d174d" font-size="20" font-weight="700" font-family="system-ui">F</text>
+          <text x="208" y="78" fill="#9d174d" font-size="11" font-family="system-ui">9</text>
+          <rect x="250" y="15" width="50" height="50" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+          <text x="258" y="47" fill="#3730a3" font-size="16" font-weight="700" font-family="system-ui">Ne</text>
+          <text x="262" y="78" fill="#3730a3" font-size="11" font-family="system-ui">10</text>
+        </svg>`,
+        opcoes: [
+          "Oxigênio (O)",
+          "Sódio (Na)",
+          "Cloro (Cl)",
+          "Potássio (K)"
+        ],
+        correta: 0
+      },
+      {
+        id: 8,
+        tema: "Tabela periódica",
+        texto: "Os elementos do grupo 18 (última coluna da tabela) são chamados de:",
+        img: null,
+        opcoes: [
+          "Gases nobres",
+          "Metais alcalinos",
+          "Halogênios",
+          "Metais de transição"
+        ],
+        correta: 0
+      },
+      {
+        id: 9,
+        tema: "Tabela periódica",
+        texto: "Os metais alcalinos (grupo 1) têm quantos elétrons na última camada?",
+        img: null,
+        opcoes: [
+          "1 elétron",
+          "2 elétrons",
+          "7 elétrons",
+          "8 elétrons"
+        ],
+        correta: 0
+      },
+      {
+        id: 10,
+        tema: "Tabela periódica",
+        texto: "Qual das propriedades abaixo geralmente aumenta de cima para baixo em uma família da tabela periódica?",
+        img: null,
+        opcoes: [
+          "Tamanho do átomo (raio atômico)",
+          "Facilidade de atrair elétrons (eletronegatividade)",
+          "Dificuldade de perder elétrons (energia de ionização)",
+          "Número de prótons no núcleo diminui"
+        ],
+        correta: 0
+      },
+      {
+        id: 11,
+        tema: "Ligações químicas",
+        texto: "Quando um metal doa elétron(s) para um não-metal, forma-se uma ligação do tipo:",
+        img: null,
+        opcoes: [
+          "Iônica",
+          "Covalente",
+          "Metálica",
+          "De hidrogênio"
+        ],
+        correta: 0
+      },
+      {
+        id: 12,
+        tema: "Ligações químicas",
+        texto: "No desenho da molécula de água, o oxigênio compartilha elétrons com dois hidrogênios. Que tipo de ligação é essa?",
+        img: `<svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="130" cy="55" r="26" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5"/>
+          <text x="120" y="62" fill="#1e40af" font-size="20" font-weight="700" font-family="system-ui">O</text>
+          <line x1="108" y1="70" x2="60" y2="105" stroke="#16a34a" stroke-width="3.5"/>
+          <line x1="152" y1="70" x2="200" y2="105" stroke="#16a34a" stroke-width="3.5"/>
+          <circle cx="50" cy="115" r="18" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="42" y="121" fill="#92400e" font-size="16" font-weight="700" font-family="system-ui">H</text>
+          <circle cx="210" cy="115" r="18" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="202" y="121" fill="#92400e" font-size="16" font-weight="700" font-family="system-ui">H</text>
+          <text x="70" y="25" fill="#64748b" font-size="12" font-family="system-ui">elétrons compartilhados</text>
+        </svg>`,
+        opcoes: [
+          "Ligação covalente",
+          "Ligação iônica",
+          "Ligação metálica",
+          "Ligação de hidrogênio (intermolecular)"
+        ],
+        correta: 0
+      },
+      {
+        id: 13,
+        tema: "Ligações químicas",
+        texto: "Qual substância é formada principalmente por ligação iônica?",
+        img: null,
+        opcoes: [
+          "Sal de cozinha (NaCl)",
+          "Água (H₂O)",
+          "Gás oxigênio (O₂)",
+          "Gás hidrogênio (H₂)"
+        ],
+        correta: 0
+      },
+      {
+        id: 14,
+        tema: "Ligações químicas",
+        texto: "Nos metais, os elétrons da última camada ficam “livres” formando uma nuvem. Esse modelo explica a ligação:",
+        img: `<svg viewBox="0 0 280 110" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="40" r="18" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="50" y="46" fill="#92400e" font-size="13" font-weight="700" font-family="system-ui">M⁺</text>
+          <circle cx="130" cy="40" r="18" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="120" y="46" fill="#92400e" font-size="13" font-weight="700" font-family="system-ui">M⁺</text>
+          <circle cx="200" cy="40" r="18" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="190" y="46" fill="#92400e" font-size="13" font-weight="700" font-family="system-ui">M⁺</text>
+          <circle cx="95" cy="85" r="18" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="85" y="91" fill="#92400e" font-size="13" font-weight="700" font-family="system-ui">M⁺</text>
+          <circle cx="165" cy="85" r="18" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="155" y="91" fill="#92400e" font-size="13" font-weight="700" font-family="system-ui">M⁺</text>
+          <circle cx="85" cy="55" r="5" fill="#2563eb" opacity="0.8"/>
+          <circle cx="150" cy="25" r="5" fill="#2563eb" opacity="0.8"/>
+          <circle cx="175" cy="60" r="5" fill="#2563eb" opacity="0.8"/>
+          <circle cx="110" cy="70" r="5" fill="#2563eb" opacity="0.8"/>
+          <circle cx="220" cy="55" r="5" fill="#2563eb" opacity="0.8"/>
+          <circle cx="50" cy="75" r="5" fill="#2563eb" opacity="0.8"/>
+          <text x="235" y="50" fill="#2563eb" font-size="12" font-family="system-ui">e⁻ livres</text>
+        </svg>`,
+        opcoes: [
+          "Metálica",
+          "Iônica",
+          "Covalente",
+          "De hidrogênio"
+        ],
+        correta: 0
+      },
+      {
+        id: 15,
+        tema: "Ligações químicas",
+        texto: "A molécula de gás oxigênio (O₂) é formada por dois átomos iguais que compartilham elétrons. Essa ligação é:",
+        img: null,
+        opcoes: [
+          "Covalente apolar",
+          "Covalente polar",
+          "Iônica",
+          "Metálica"
+        ],
+        correta: 0
+      },
+      {
+        id: 16,
+        tema: "Distribuição eletrônica",
+        texto: "A camada K (mais próxima do núcleo) pode ter no máximo quantos elétrons?",
+        img: null,
+        opcoes: [
+          "2 elétrons",
+          "8 elétrons",
+          "18 elétrons",
+          "32 elétrons"
+        ],
+        correta: 0
+      },
+      {
+        id: 17,
+        tema: "Tabela periódica",
+        texto: "O cloro (Z = 17) está localizado no:",
+        img: null,
+        opcoes: [
+          "3º período e grupo dos halogênios",
+          "2º período e grupo dos gases nobres",
+          "3º período e grupo dos metais alcalinos",
+          "4º período e grupo dos halogênios"
+        ],
+        correta: 0
+      },
+      {
+        id: 18,
+        tema: "Ligações químicas",
+        texto: "No sal de cozinha (NaCl), o sódio doa 1 elétron para o cloro. Depois da transferência, formam-se:",
+        img: `<svg viewBox="0 0 280 90" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="45" r="26" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.5"/>
+          <text x="44" y="52" fill="#92400e" font-size="18" font-weight="700" font-family="system-ui">Na</text>
+          <path d="M95 45 L145 45" stroke="#dc2626" stroke-width="2.5" marker-end="url(#seta)"/>
+          <text x="108" y="35" fill="#dc2626" font-size="13" font-family="system-ui">e⁻</text>
+          <defs>
+            <marker id="seta" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#dc2626"/>
+            </marker>
+          </defs>
+          <circle cx="190" cy="45" r="26" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5"/>
+          <text x="175" y="52" fill="#1e40af" font-size="18" font-weight="700" font-family="system-ui">Cl</text>
+          <text x="40" y="85" fill="#16a34a" font-size="14" font-family="system-ui">Na⁺</text>
+          <text x="175" y="85" fill="#16a34a" font-size="14" font-family="system-ui">Cl⁻</text>
+        </svg>`,
+        opcoes: [
+          "Íons Na⁺ e Cl⁻",
+          "Moléculas de NaCl sem carga",
+          "Átomos neutros de Na e Cl",
+          "Apenas elétrons livres"
+        ],
+        correta: 0
+      },
+      {
+        id: 19,
+        tema: "Distribuição eletrônica",
+        texto: "O elemento que tem distribuição em camadas K = 2, L = 8, M = 2 é o:",
+        img: null,
+        opcoes: [
+          "Magnésio (Z = 12)",
+          "Sódio (Z = 11)",
+          "Alumínio (Z = 13)",
+          "Neônio (Z = 10)"
+        ],
+        correta: 0
+      },
+      {
+        id: 20,
+        tema: "Ligações químicas",
+        texto: "A água tem ponto de ebulição mais alto do que moléculas parecidas por causa de uma força especial entre as moléculas. Essa força se chama:",
+        img: null,
+        opcoes: [
+          "Ligação de hidrogênio",
+          "Ligação iônica",
+          "Ligação metálica",
+          "Força de gravidade"
+        ],
+        correta: 0
+      }
+    ];
+
+    /* ========== FUNÇÕES UTILITÁRIAS ========== */
+    function shuffle(array) {
+      const a = [...array];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+      ));
+    }
+
+    function normalizeName(name) {
+      return name.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function getUsedNames() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      } catch {
+        return {};
+      }
+    }
+
+    /* Agora também guarda o tempo de realização (em segundos) */
+    function saveUsedName(name, score, total, tempoSeg) {
+      const used = getUsedNames();
+      used[normalizeName(name)] = {
+        nome: name.trim(),
+        nota: score,
+        total: total,
+        tempo: tempoSeg,
+        data: new Date().toLocaleString('pt-BR')
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(used));
+      } catch (e) {
+        console.error('Não foi possível salvar o resultado:', e);
+      }
+    }
+
+    function isNameUsed(name) {
+      const used = getUsedNames();
+      return !!used[normalizeName(name)];
+    }
+
+    function formatDuracao(seg) {
+      if (typeof seg !== 'number') return '—';
+      const m = Math.floor(seg / 60);
+      const s = seg % 60;
+      return `${m} min ${String(s).padStart(2, '0')} s`;
+    }
+
+    /* ========== ESTADO ========== */
+    let quiz = [];
+    let current = 0;
+    let answers = [];
+    let studentName = '';
+    let timerInterval = null;
+    let secondsLeft = TEMPO_TOTAL_SEGUNDOS;
+    let startTime = null;
+
+    function prepareQuiz() {
+      const shuffledQs = shuffle(questoesAtivas()).slice(0, totalProva());
+      quiz = shuffledQs.map(q => {
+        const indices = q.opcoes.map((_, i) => i);
+        const shuffledIndices = shuffle(indices);
+        const newOpcoes = shuffledIndices.map(i => q.opcoes[i]);
+        const newCorreta = shuffledIndices.indexOf(q.correta);
+        return { ...q, opcoes: newOpcoes, correta: newCorreta };
+      });
+      answers = new Array(quiz.length).fill(-1);
+      current = 0;
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.start-screen, .quiz-screen, .result-screen, .ranking-screen, .editor-screen, .login-screen')
+        .forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+
+      // Guias ficam ocultas durante a prova (evita ver notas dos colegas)
+      document.getElementById('tabBar').classList.toggle('hidden', id === 'quizScreen');
+      const emResultados = id === 'rankingScreen';
+      const emEditor = id === 'editorScreen' || id === 'loginScreen';
+      if (id !== 'editorScreen') profLogado = false; // sair da guia encerra o acesso
+      document.getElementById('tabProva').classList.toggle('active', !emResultados && !emEditor);
+      document.getElementById('tabRanking').classList.toggle('active', emResultados);
+      document.getElementById('tabEditor').classList.toggle('active', emEditor);
+    }
+
+    /* ========== GUIAS ========== */
+    function openTab(tab) {
+      if (timerInterval) return; // prova em andamento
+      if (tab === 'resultados') {
+        renderRanking();
+        showScreen('rankingScreen');
+      } else if (tab === 'questoes') {
+        if (profLogado) {
+          renderExtras();
+          showScreen('editorScreen');
+        } else {
+          abrirLogin();
+        }
+      } else {
+        showScreen('startScreen');
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function getRegistros() {
+      const lista = Object.values(getUsedNames());
+      lista.sort((a, b) => {
+        if (b.nota !== a.nota) return b.nota - a.nota;
+        const ta = typeof a.tempo === 'number' ? a.tempo : Infinity;
+        const tb = typeof b.tempo === 'number' ? b.tempo : Infinity;
+        return ta - tb;
+      });
+      return lista;
+    }
+
+    function renderRanking() {
+      const lista = getRegistros();
+      const stats = document.getElementById('statsBox');
+      const box = document.getElementById('rankingBox');
+
+      if (lista.length === 0) {
+        stats.innerHTML = '';
+        box.innerHTML = '<div class="empty-msg">Nenhum aluno realizou a prova ainda neste aparelho.</div>';
+        return;
+      }
+
+      const mediaNota = lista.reduce((s, r) => s + r.nota, 0) / lista.length;
+      const comTempo = lista.filter(r => typeof r.tempo === 'number');
+      const mediaTempo = comTempo.length
+        ? Math.round(comTempo.reduce((s, r) => s + r.tempo, 0) / comTempo.length)
+        : null;
+
+      stats.innerHTML = `
+        <div class="stat"><b>${lista.length}</b><span>Alunos</span></div>
+        <div class="stat"><b>${mediaNota.toFixed(1).replace('.', ',')}</b><span>Nota média</span></div>
+        <div class="stat"><b>${mediaTempo !== null ? formatDuracao(mediaTempo) : '—'}</b><span>Tempo médio</span></div>
+      `;
+
+      const medalhas = ['🥇', '🥈', '🥉'];
+      let rows = '';
+      lista.forEach((r, i) => {
+        const total = r.total || 20;
+        const pct = Math.round((r.nota / total) * 100);
+        const cls = pct >= 70 ? 'nota-ok' : pct >= 50 ? 'nota-mid' : 'nota-low';
+        rows += `
+          <tr>
+            <td class="pos">${medalhas[i] || (i + 1)}</td>
+            <td>${escapeHtml(r.nome)}</td>
+            <td class="${cls}">${r.nota}/${total}</td>
+            <td>${pct}%</td>
+            <td>${formatDuracao(r.tempo)}</td>
+            <td>${escapeHtml(r.data || '—')}</td>
+          </tr>`;
+      });
+
+      box.innerHTML = `
+        <div class="table-wrap">
+          <table class="ranking">
+            <thead>
+              <tr><th>#</th><th>Aluno</th><th>Nota</th><th>%</th><th>Tempo</th><th>Data</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    }
+
+    function exportCSV() {
+      if (!getRegistros().length) { alert('Não há resultados para exportar.'); return; }
+      pedirSenha('Digite a senha do professor para exportar os resultados.', gerarCSV);
+    }
+
+    function gerarCSV() {
+      const lista = getRegistros();
+      if (!lista.length) { alert('Não há resultados para exportar.'); return; }
+      const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+      const linhas = [['Posição', 'Aluno', 'Nota', 'Total', 'Percentual', 'Tempo (min:s)', 'Data'].map(esc).join(';')];
+      lista.forEach((r, i) => {
+        const total = r.total || 20;
+        const t = typeof r.tempo === 'number'
+          ? `${Math.floor(r.tempo / 60)}:${String(r.tempo % 60).padStart(2, '0')}` : '';
+        linhas.push([i + 1, r.nome, r.nota, total, Math.round((r.nota / total) * 100) + '%', t, r.data || '']
+          .map(esc).join(';'));
+      });
+      const blob = new Blob(['\ufeff' + linhas.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'resultados_prova_ciencias_9ano.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    /* Pede a senha do professor antes de executar uma ação protegida */
+    let acaoPendente = null;
+
+    function pedirSenha(texto, acao) {
+      acaoPendente = acao;
+      document.getElementById('senhaModalTexto').textContent = texto;
+      document.getElementById('senhaModalInput').value = '';
+      const msg = document.getElementById('senhaModalMsg');
+      if (!PROF_SENHA) {
+        msg.textContent = 'Senha ainda não configurada. Defina PROF_SENHA no código do arquivo.';
+        msg.className = 'editor-msg show err';
+      } else {
+        msg.className = 'editor-msg';
+      }
+      document.getElementById('senhaModal').classList.add('show');
+      setTimeout(() => document.getElementById('senhaModalInput').focus(), 50);
+    }
+
+    function fecharSenhaModal() {
+      document.getElementById('senhaModal').classList.remove('show');
+      document.getElementById('senhaModalInput').value = '';
+      acaoPendente = null;
+    }
+
+    function confirmarSenhaModal() {
+      const msg = document.getElementById('senhaModalMsg');
+      const erro = t => { msg.textContent = t; msg.className = 'editor-msg show err'; };
+      if (!PROF_SENHA) { erro('Senha ainda não configurada. Defina PROF_SENHA no código do arquivo.'); return; }
+      const agora = Date.now();
+      if (agora < bloqueadoAte) {
+        erro(`Muitas tentativas. Aguarde ${Math.ceil((bloqueadoAte - agora) / 1000)} s.`);
+        return;
+      }
+      if (document.getElementById('senhaModalInput').value === PROF_SENHA) {
+        tentativasErradas = 0;
+        const acao = acaoPendente;
+        fecharSenhaModal();
+        if (acao) acao();
+      } else {
+        document.getElementById('senhaModalInput').value = '';
+        tentativasErradas++;
+        if (tentativasErradas >= 5) {
+          bloqueadoAte = Date.now() + 30000;
+          tentativasErradas = 0;
+          erro('Muitas tentativas. Aguarde 30 s para tentar de novo.');
+        } else {
+          erro('Senha incorreta.');
+        }
+      }
+    }
+
+    function limparRegistros() {
+      if (!getRegistros().length) return;
+      pedirSenha('Digite a senha do professor para apagar todos os resultados.', () => {
+        if (confirm('Apagar TODOS os resultados salvos neste aparelho? Os alunos poderão refazer a prova. Esta ação não pode ser desfeita.')) {
+          try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+          renderRanking();
+        }
+      });
+    }
+
+    /* ========== LOGIN DO PROFESSOR ========== */
+    let profLogado = false;
+    let tentativasErradas = 0;
+    let bloqueadoAte = 0;
+
+    function msgLogin(texto, tipo) {
+      const el = document.getElementById('loginMsg');
+      el.textContent = texto;
+      el.className = 'editor-msg show ' + tipo;
+    }
+
+    function abrirLogin() {
+      document.getElementById('loginUser').value = '';
+      document.getElementById('loginPass').value = '';
+      document.getElementById('loginMsg').className = 'editor-msg';
+      showScreen('loginScreen');
+      if (!PROF_LOGIN || !PROF_SENHA) {
+        msgLogin('Acesso ainda não configurado. Defina PROF_LOGIN e PROF_SENHA no código do arquivo.', 'err');
+      }
+      window.scrollTo(0, 0);
+      setTimeout(() => document.getElementById('loginUser').focus(), 100);
+    }
+
+    function entrarProfessor() {
+      if (!PROF_LOGIN || !PROF_SENHA) {
+        msgLogin('Acesso ainda não configurado. Defina PROF_LOGIN e PROF_SENHA no código do arquivo.', 'err');
+        return;
+      }
+      const agora = Date.now();
+      if (agora < bloqueadoAte) {
+        const resta = Math.ceil((bloqueadoAte - agora) / 1000);
+        msgLogin(`Muitas tentativas. Aguarde ${resta} s.`, 'err');
+        return;
+      }
+      const u = document.getElementById('loginUser').value.trim().toLowerCase();
+      const pw = document.getElementById('loginPass').value;
+      if (u === PROF_LOGIN.trim().toLowerCase() && pw === PROF_SENHA) {
+        tentativasErradas = 0;
+        profLogado = true;
+        document.getElementById('loginPass').value = '';
+        renderExtras();
+        showScreen('editorScreen');
+        window.scrollTo(0, 0);
+      } else {
+        tentativasErradas++;
+        document.getElementById('loginPass').value = '';
+        if (tentativasErradas >= 5) {
+          bloqueadoAte = Date.now() + 30000;
+          tentativasErradas = 0;
+          msgLogin('Muitas tentativas. Aguarde 30 s para tentar de novo.', 'err');
+        } else {
+          msgLogin('Login ou senha incorretos.', 'err');
+        }
+      }
+    }
+
+    function sairProfessor() {
+      profLogado = false;
+      limparFormulario();
+      showScreen('startScreen');
+      window.scrollTo(0, 0);
+    }
+
+    /* ========== QUESTÕES ADICIONAIS ========== */
+    const EXTRAS_KEY = 'prova_ciencias_9ano_questoes_extras';
+    let imagemAtual = null;
+
+    function getExtras() {
+      try {
+        const l = JSON.parse(localStorage.getItem(EXTRAS_KEY) || '[]');
+        return Array.isArray(l) ? l : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setExtras(lista) {
+      try {
+        localStorage.setItem(EXTRAS_KEY, JSON.stringify(lista));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const OVR_KEY = 'prova_ciencias_9ano_alteracoes';
+
+    function svgParaUrl(svg) {
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(String(svg).trim());
+    }
+
+    function imgOk(u) {
+      return !!u && String(u).startsWith('data:image/') && !String(u).includes('"');
+    }
+
+    /* Alterações feitas sobre as questões originais: { id: { deleted: bool, edit: {...}|null } } */
+    function getOverrides() {
+      try {
+        const o = JSON.parse(localStorage.getItem(OVR_KEY) || '{}');
+        return (o && typeof o === 'object' && !Array.isArray(o)) ? o : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function setOverrides(o) {
+      try {
+        localStorage.setItem(OVR_KEY, JSON.stringify(o));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    /* Converte uma questão salva (texto puro) para o formato usado na prova */
+    function paraQuestao(e, id, temaPadrao) {
+      return {
+        id,
+        tema: escapeHtml(e.tema || temaPadrao),
+        texto: escapeHtml(e.texto),
+        puro: e.texto,
+        img: imgOk(e.img)
+          ? `<img src="${e.img}" alt="Figura da questão" style="max-width:100%;height:auto;border-radius:8px">`
+          : null,
+        opcoes: e.opcoes.map(escapeHtml),
+        correta: e.correta
+      };
+    }
+
+    function extrasComoQuestoes() {
+      return getExtras().map(e => paraQuestao(e, 'x' + e.id, 'Questão adicional'));
+    }
+
+    /* Todas as questões que entram na prova: originais (não excluídas, com edições) + adicionadas */
+    function questoesAtivas() {
+      const ov = getOverrides();
+      const base = [];
+      questionsBank.forEach(q => {
+        const o = ov[q.id] || {};
+        if (o.deleted) return;
+        base.push(o.edit ? paraQuestao(o.edit, 'o' + q.id, q.tema) : q);
+      });
+      return base.concat(extrasComoQuestoes());
+    }
+
+    /* Lista completa para o painel de gerenciamento (inclui excluídas) */
+    function getItens() {
+      const ov = getOverrides();
+      const itens = [];
+      questionsBank.forEach(q => {
+        const o = ov[q.id] || {};
+        const e = o.edit;
+        itens.push({
+          tipo: 'o', id: q.id,
+          tema: e ? e.tema : q.tema,
+          texto: e ? e.texto : q.texto,
+          opcoes: e ? e.opcoes : q.opcoes,
+          correta: e ? e.correta : q.correta,
+          imgUrl: e ? (imgOk(e.img) ? e.img : null) : (q.img ? svgParaUrl(q.img) : null),
+          editada: !!e, excluida: !!o.deleted
+        });
+      });
+      getExtras().forEach(e => itens.push({
+        tipo: 'x', id: e.id, tema: e.tema, texto: e.texto, opcoes: e.opcoes, correta: e.correta,
+        imgUrl: imgOk(e.img) ? e.img : null, editada: false, excluida: false
+      }));
+      return itens;
+    }
+
+    function resumo(q) {
+      const t = q.puro || q.texto;
+      const r = t.substring(0, 50) + (t.length > 50 ? '…' : '');
+      return q.puro ? escapeHtml(r) : r;
+    }
+
+    /* ===== Quantidade fixa de questões por aluno ===== */
+    const QTD_KEY = 'prova_ciencias_9ano_qtd_por_aluno';
+
+    function getQtdFixa() {
+      try {
+        const n = parseInt(localStorage.getItem(QTD_KEY), 10);
+        return (Number.isInteger(n) && n >= 1) ? n : null;
+      } catch {
+        return null;
+      }
+    }
+
+    /* Quantas questões cada aluno realmente recebe */
+    function totalProva() {
+      const ativas = questoesAtivas().length;
+      const fixa = getQtdFixa();
+      return fixa ? Math.min(fixa, ativas) : ativas;
+    }
+
+    function atualizarQtdUI() {
+      const ativas = questoesAtivas().length;
+      const fixa = getQtdFixa();
+      document.getElementById('qtdInput').max = ativas;
+      document.getElementById('qtdInput').value = fixa || '';
+      let txt;
+      if (fixa) {
+        txt = `Fixado: cada aluno recebe ${Math.min(fixa, ativas)} questões (de ${ativas} no banco).`;
+        if (fixa > ativas) txt += ' O valor fixado é maior que o banco, então todas serão usadas.';
+      } else {
+        txt = `Sem limite: cada aluno recebe todas as ${ativas} questões do banco.`;
+      }
+      document.getElementById('qtdStatus').textContent = txt;
+    }
+
+    function msgQtd(texto, tipo) {
+      const el = document.getElementById('qtdMsg');
+      el.textContent = texto;
+      el.className = 'editor-msg show ' + tipo;
+    }
+
+    function fixarQtd() {
+      const ativas = questoesAtivas().length;
+      const n = parseInt(document.getElementById('qtdInput').value, 10);
+      if (!Number.isInteger(n) || n < 1) { msgQtd('Digite um número inteiro maior que zero.', 'err'); return; }
+      if (n > ativas) { msgQtd(`O banco tem apenas ${ativas} questões ativas.`, 'err'); return; }
+      try {
+        localStorage.setItem(QTD_KEY, String(n));
+      } catch (e) {
+        msgQtd('Não foi possível salvar o valor.', 'err');
+        return;
+      }
+      msgQtd(`✓ Valor fixado em ${n} questões por aluno.`, 'ok');
+      atualizarContagem();
+    }
+
+    function usarTodasQuestoes() {
+      try { localStorage.removeItem(QTD_KEY); } catch (e) {}
+      msgQtd('✓ Limite removido: cada aluno receberá todas as questões.', 'ok');
+      atualizarContagem();
+    }
+
+    function atualizarContagem() {
+      const total = totalProva();
+      document.getElementById('badgeInfo').textContent =
+        `${total} questões · 25 minutos · Embaralhadas a cada acesso`;
+      atualizarQtdUI();
+      atualizarSomUI();
+    }
+
+    function mostrarMsgEditor(texto, tipo) {
+      const el = document.getElementById('editorMsg');
+      el.textContent = texto;
+      el.className = 'editor-msg show ' + tipo;
+    }
+
+    function definirImagem(url) {
+      imagemAtual = url;
+      const box = document.getElementById('imgPreview');
+      if (!url) { box.innerHTML = ''; return; }
+      box.innerHTML = `<img src="${url}" alt="Pré-visualização" /><br/>
+        <button class="btn-danger" onclick="removerImagem()">Remover imagem</button>`;
+    }
+
+    function removerImagem() {
+      document.getElementById('qImg').value = '';
+      definirImagem(null);
+    }
+
+    function carregarImagem(input) {
+      const f = input.files[0];
+      if (!f) return;
+      if (!f.type.startsWith('image/')) {
+        mostrarMsgEditor('Escolha um arquivo de imagem.', 'err');
+        input.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (f.type === 'image/svg+xml') {
+          if (f.size > 300 * 1024) {
+            mostrarMsgEditor('O SVG é grande demais (máx. 300 KB).', 'err');
+            input.value = '';
+            return;
+          }
+          definirImagem(reader.result);
+          return;
+        }
+        const img = new Image();
+        img.onload = () => {
+          // Reduz para no máx. 700 px para caber no armazenamento do navegador
+          const r = Math.min(1, 700 / Math.max(img.width, img.height));
+          const c = document.createElement('canvas');
+          c.width = Math.round(img.width * r);
+          c.height = Math.round(img.height * r);
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, c.width, c.height);
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+          definirImagem(c.toDataURL('image/jpeg', 0.85));
+          document.getElementById('editorMsg').className = 'editor-msg';
+        };
+        img.onerror = () => mostrarMsgEditor('Não foi possível ler essa imagem.', 'err');
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(f);
+    }
+
+    let editando = null; // { tipo: 'o' | 'x', id } quando uma questão está sendo editada
+
+    function atualizarModoForm() {
+      const ed = !!editando;
+      document.getElementById('formTitulo').textContent = ed ? '✏️ Editando questão' : 'Nova questão';
+      document.getElementById('btnSalvar').textContent = ed ? 'Salvar alterações' : 'Salvar questão';
+      document.getElementById('btnCancelEdit').style.display = ed ? '' : 'none';
+    }
+
+    function limparFormulario() {
+      editando = null;
+      document.getElementById('qTema').value = '';
+      document.getElementById('qTexto').value = '';
+      for (let i = 0; i < 4; i++) document.getElementById('qAlt' + i).value = '';
+      document.querySelector('input[name="qCorreta"][value="0"]').checked = true;
+      removerImagem();
+      document.getElementById('editorMsg').className = 'editor-msg';
+      atualizarModoForm();
+    }
+
+    function sairEdicao() { limparFormulario(); }
+
+    function preencherFormulario(it) {
+      document.getElementById('qTema').value = it.tema || '';
+      document.getElementById('qTexto').value = it.texto;
+      for (let i = 0; i < 4; i++) document.getElementById('qAlt' + i).value = it.opcoes[i] || '';
+      document.querySelector(`input[name="qCorreta"][value="${it.correta}"]`).checked = true;
+      removerImagem();
+      if (it.imgUrl) definirImagem(it.imgUrl);
+      document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function acharItem(tipo, id) {
+      return getItens().find(x => x.tipo === tipo && String(x.id) === String(id));
+    }
+
+    function editarQuestao(tipo, id) {
+      const it = acharItem(tipo, id);
+      if (!it) return;
+      preencherFormulario(it);
+      editando = { tipo: it.tipo, id: it.id };
+      atualizarModoForm();
+      mostrarMsgEditor('Altere o que for preciso e clique em "Salvar alterações".', 'ok');
+    }
+
+    function duplicarQuestao(tipo, id) {
+      const it = acharItem(tipo, id);
+      if (!it) return;
+      preencherFormulario(it);
+      editando = null;
+      atualizarModoForm();
+      mostrarMsgEditor('Cópia carregada. Adapte e clique em "Salvar questão" para criar uma nova (a original não muda).', 'ok');
+    }
+
+    function salvarQuestao() {
+      const tema = document.getElementById('qTema').value.trim();
+      const texto = document.getElementById('qTexto').value.trim();
+      const opcoes = [0, 1, 2, 3].map(i => document.getElementById('qAlt' + i).value.trim());
+      const correta = parseInt(document.querySelector('input[name="qCorreta"]:checked').value, 10);
+
+      if (texto.length < 5) { mostrarMsgEditor('Digite a pergunta (mínimo 5 caracteres).', 'err'); return; }
+      if (opcoes.some(o => !o)) { mostrarMsgEditor('Preencha as 4 alternativas.', 'err'); return; }
+      const unicas = new Set(opcoes.map(o => o.toLowerCase()));
+      if (unicas.size < 4) { mostrarMsgEditor('As alternativas não podem ser repetidas.', 'err'); return; }
+
+      const dados = { tema, texto, img: imagemAtual, opcoes, correta };
+      let ok;
+      if (editando && editando.tipo === 'x') {
+        const lista = getExtras();
+        const i = lista.findIndex(e => e.id === editando.id);
+        if (i >= 0) lista[i] = { ...dados, id: editando.id };
+        else lista.push({ ...dados, id: editando.id });
+        ok = setExtras(lista);
+      } else if (editando && editando.tipo === 'o') {
+        const ov = getOverrides();
+        const o = ov[editando.id] || {};
+        o.edit = dados;
+        ov[editando.id] = o;
+        ok = setOverrides(ov);
+      } else {
+        const lista = getExtras();
+        lista.push({ id: Date.now(), ...dados });
+        ok = setExtras(lista);
+      }
+      if (!ok) {
+        mostrarMsgEditor('Não foi possível salvar (armazenamento cheio). Tente uma imagem menor.', 'err');
+        return;
+      }
+      const eraEdicao = !!editando;
+      limparFormulario();
+      mostrarMsgEditor(eraEdicao ? '✓ Alterações salvas!' : '✓ Questão salva! Ela já faz parte da prova.', 'ok');
+      renderExtras();
+      atualizarContagem();
+    }
+
+    function excluirQuestao(tipo, id) {
+      const it = acharItem(tipo, id);
+      if (!it) return;
+      const ativas = getItens().filter(x => !x.excluida).length;
+      if (ativas <= 1) { alert('A prova precisa ter pelo menos 1 questão.'); return; }
+      const aviso = tipo === 'o'
+        ? 'Excluir esta questão da prova? Você poderá restaurá-la depois.'
+        : 'Excluir esta questão definitivamente?';
+      if (!confirm(aviso)) return;
+      if (tipo === 'x') {
+        setExtras(getExtras().filter(e => e.id !== it.id));
+      } else {
+        const ov = getOverrides();
+        const o = ov[it.id] || {};
+        o.deleted = true;
+        ov[it.id] = o;
+        setOverrides(ov);
+      }
+      if (editando && editando.tipo === tipo && editando.id === it.id) limparFormulario();
+      renderExtras();
+      atualizarContagem();
+    }
+
+    function restaurarQuestao(id) {
+      const ov = getOverrides();
+      if (!ov[id]) return;
+      ov[id].deleted = false;
+      if (!ov[id].edit) delete ov[id];
+      setOverrides(ov);
+      renderExtras();
+      atualizarContagem();
+    }
+
+    function restaurarOriginal(id) {
+      if (!confirm('Descartar suas edições e voltar ao texto original desta questão?')) return;
+      const ov = getOverrides();
+      if (!ov[id]) return;
+      ov[id].edit = null;
+      if (!ov[id].deleted) delete ov[id];
+      setOverrides(ov);
+      if (editando && editando.tipo === 'o' && editando.id === id) limparFormulario();
+      renderExtras();
+      atualizarContagem();
+    }
+
+    function renderExtras() {
+      const itens = getItens();
+      document.getElementById('extraCount').textContent = itens.filter(x => !x.excluida).length;
+      const box = document.getElementById('extraList');
+      const letras = ['A', 'B', 'C', 'D'];
+      box.innerHTML = itens.map((it, n) => {
+        const rotulo = it.tipo === 'x' ? 'Adicionada' : (it.editada ? 'Original · editada' : 'Original');
+        let acoes = '';
+        if (it.excluida) {
+          acoes = `<button class="btn-mini ok" onclick="restaurarQuestao(${it.id})">↩ Restaurar</button>`;
+        } else {
+          acoes = `<button class="btn-mini" onclick="editarQuestao('${it.tipo}',${it.id})">✏️ Editar</button>
+            <button class="btn-mini" onclick="duplicarQuestao('${it.tipo}',${it.id})">⧉ Duplicar</button>
+            ${it.editada ? `<button class="btn-mini" onclick="restaurarOriginal(${it.id})">↩ Voltar ao original</button>` : ''}
+            <button class="btn-mini del" onclick="excluirQuestao('${it.tipo}',${it.id})">🗑 Excluir</button>`;
+        }
+        return `
+        <div class="extra-item ${it.excluida ? 'excluida' : ''}">
+          <div class="extra-tema">${escapeHtml(it.tema || 'Questão adicional')} · Nº ${n + 1}
+            <span class="tag">${rotulo}</span>${it.excluida ? '<span class="tag exc">Excluída</span>' : ''}</div>
+          <div>${escapeHtml(it.texto)}</div>
+          ${it.imgUrl ? `<img src="${it.imgUrl}" alt="Figura" />` : ''}
+          <ul>
+            ${it.opcoes.map((o, i) => `<li class="${i === it.correta ? 'certa' : ''}">${letras[i]}) ${escapeHtml(o)}${i === it.correta ? ' ✓' : ''}</li>`).join('')}
+          </ul>
+          <div class="acoes">${acoes}</div>
+        </div>`;
+      }).join('');
+    }
+
+    /* ========== SONS (gerados no navegador, sem arquivos) ========== */
+    const SOM_KEY = 'prova_ciencias_9ano_som';
+    let audioCtx = null;
+
+    function somAtivo() {
+      try { return localStorage.getItem(SOM_KEY) !== '0'; } catch { return true; }
+    }
+
+    function atualizarSomUI() {
+      const on = somAtivo();
+      document.getElementById('btnSom').textContent = on ? 'Desativar som' : 'Ativar som';
+      document.getElementById('somStatus').textContent = on
+        ? 'Som ativado: sino ao acertar, buzina ao errar. A resposta fica travada após escolher.'
+        : 'Som desativado: o aluno pode trocar a resposta livremente.';
+    }
+
+    function alternarSom() {
+      try { localStorage.setItem(SOM_KEY, somAtivo() ? '0' : '1'); } catch (e) {}
+      atualizarSomUI();
+    }
+
+    function getAudio() {
+      try {
+        if (!audioCtx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return null;
+          audioCtx = new AC();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function tocarSino() {
+      const ctx = getAudio();
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      const base = 880;
+      [[1, 0.5], [2, 0.22], [2.76, 0.28], [5.4, 0.1]].forEach(([m, v]) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = base * m;
+        const dur = 1.8 / Math.sqrt(m);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(v * 0.5, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start(t);
+        o.stop(t + dur + 0.05);
+      });
+    }
+
+    function tocarBuzina() {
+      const ctx = getAudio();
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      [400, 500].forEach(f => {
+        const o = ctx.createOscillator();
+        const lp = ctx.createBiquadFilter();
+        const g = ctx.createGain();
+        o.type = 'sawtooth';
+        o.frequency.value = f;
+        lp.type = 'lowpass';
+        lp.frequency.value = 1400;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.16, t + 0.03);
+        g.gain.setValueAtTime(0.16, t + 0.5);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+        o.connect(lp);
+        lp.connect(g);
+        g.connect(ctx.destination);
+        o.start(t);
+        o.stop(t + 0.75);
+      });
+    }
+
+    /* ========== CRONÔMETRO ========== */
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateTimer() {
+      document.getElementById('timerText').textContent = formatTime(secondsLeft);
+      const box = document.getElementById('timerBox');
+      if (secondsLeft <= 60) {
+        box.classList.add('warning');
+      } else {
+        box.classList.remove('warning');
+      }
+      if (secondsLeft <= 0) {
+        clearInterval(timerInterval);
+        finishQuiz(true);
+      }
+    }
+
+    function startTimer() {
+      secondsLeft = TEMPO_TOTAL_SEGUNDOS;
+      startTime = Date.now();
+      updateTimer();
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        updateTimer();
+      }, 1000);
+    }
+
+    function startQuiz() {
+      const input = document.getElementById('studentName');
+      const errorEl = document.getElementById('nameError');
+      const name = input.value.trim();
+
+      errorEl.classList.remove('show');
+
+      if (name.length < 3) {
+        errorEl.textContent = 'Digite seu nome completo (mínimo 3 caracteres).';
+        errorEl.classList.add('show');
+        input.focus();
+        return;
+      }
+
+      if (isNameUsed(name)) {
+        errorEl.textContent = 'Este nome já realizou a prova neste aparelho. Não é permitido repetir.';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      if (questoesAtivas().length === 0) {
+        errorEl.textContent = 'A prova não tem questões no momento. Avise o professor.';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      studentName = name;
+      prepareQuiz();
+      document.getElementById('nameDisplay').textContent = studentName;
+      showScreen('quizScreen');
+      startTimer();
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = quiz[current];
+      const card = document.getElementById('questionCard');
+      let html = `
+        <div class="q-num">${q.tema} · Questão ${current + 1} de ${quiz.length}</div>
+        <div class="q-text">${q.texto}</div>
+      `;
+      if (q.img) html += `<div class="q-img">${q.img}</div>`;
+      html += `<div class="options">`;
+      const letters = ['A', 'B', 'C', 'D'];
+      const travada = somAtivo() && answers[current] !== -1;
+      q.opcoes.forEach((op, i) => {
+        const selected = answers[current] === i ? 'selected' : '';
+        html += `
+          <label class="option ${selected} ${travada ? 'locked' : ''}" onclick="selectOption(${i})">
+            <span class="opt-letter">${letters[i]}</span>
+            <span class="opt-text">${op}</span>
+          </label>
+        `;
+      });
+      html += `</div>`;
+      if (travada) html += `<div class="lock-note">🔒 Resposta registrada</div>`;
+      card.innerHTML = html;
+
+      const pct = ((current + 1) / quiz.length) * 100;
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = `Questão ${current + 1} de ${quiz.length}`;
+
+      document.getElementById('btnPrev').disabled = current === 0;
+      const btnNext = document.getElementById('btnNext');
+      if (current === quiz.length - 1) {
+        btnNext.textContent = 'Finalizar prova';
+        btnNext.className = 'btn-success';
+      } else {
+        btnNext.textContent = 'Próxima →';
+        btnNext.className = 'btn-primary';
+      }
+    }
+
+    function selectOption(index) {
+      if (somAtivo()) {
+        if (answers[current] !== -1) return; // resposta já registrada
+        answers[current] = index;
+        if (index === quiz[current].correta) tocarSino(); else tocarBuzina();
+      } else {
+        answers[current] = index;
+      }
+      renderQuestion();
+    }
+
+    function nextQuestion() {
+      if (current < quiz.length - 1) {
+        current++;
+        renderQuestion();
+      } else {
+        finishQuiz(false);
+      }
+    }
+
+    function prevQuestion() {
+      if (current > 0) {
+        current--;
+        renderQuestion();
+      }
+    }
+
+    function finishQuiz(tempoEsgotado) {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      let acertos = 0;
+      quiz.forEach((q, i) => {
+        if (answers[i] === q.correta) acertos++;
+      });
+      const pct = Math.round((acertos / quiz.length) * 100);
+      const tempoUsado = Math.min(TEMPO_TOTAL_SEGUNDOS, Math.max(0, TEMPO_TOTAL_SEGUNDOS - secondsLeft));
+
+      saveUsedName(studentName, acertos, quiz.length, tempoUsado);
+
+      document.getElementById('resultName').textContent = studentName;
+      document.getElementById('finalScore').textContent = `${acertos}/${quiz.length}`;
+      let msg = '';
+      if (tempoEsgotado) msg = '⏱ Tempo esgotado! ';
+      if (pct >= 90) msg += 'Mandou bem! Você foi excelente.';
+      else if (pct >= 70) msg += 'Muito bom! Continue estudando os pontos que faltaram.';
+      else if (pct >= 50) msg += 'Razoável. Vale a pena revisar o conteúdo.';
+      else msg += 'Precisa reforçar. Use o gabarito abaixo para estudar.';
+      document.getElementById('finalMsg').textContent = msg + ` (${pct}%)`;
+      document.getElementById('timeUsed').textContent = `Tempo usado: ${formatDuracao(tempoUsado)}`;
+
+      let gabHtml = '<h3>Gabarito da sua tentativa</h3>';
+      const letters = ['A', 'B', 'C', 'D'];
+      quiz.forEach((q, i) => {
+        const escolhida = answers[i];
+        const acertou = escolhida === q.correta;
+        gabHtml += `
+          <div class="gab-item">
+            <span class="status ${acertou ? 'ok' : 'no'}">${acertou ? '✓' : '✗'}</span>
+            <strong>Q${i + 1}</strong> (${q.tema}) — ${resumo(q)}<br/>
+            Sua resposta: ${escolhida >= 0 ? letters[escolhida] + ') ' + q.opcoes[escolhida] : '<em>não respondida</em>'}<br/>
+            Correta: ${letters[q.correta]}) ${q.opcoes[q.correta]}
+          </div>
+        `;
+      });
+      document.getElementById('gabaritoBox').innerHTML = gabHtml;
+      showScreen('resultScreen');
+      window.scrollTo(0, 0);
+    }
+
+    function novoAluno() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      studentName = '';
+      answers = [];
+      quiz = [];
+      current = 0;
+      secondsLeft = TEMPO_TOTAL_SEGUNDOS;
+      document.getElementById('studentName').value = '';
+      document.getElementById('nameError').classList.remove('show');
+      showScreen('startScreen');
+      window.scrollTo(0, 0);
+      setTimeout(() => document.getElementById('studentName').focus(), 100);
+    }
+
+    atualizarContagem();
+
+    document.getElementById('senhaModalInput').addEventListener('keydown', e => { if (e.key === 'Enter') confirmarSenhaModal(); });
+    document.getElementById('senhaModal').addEventListener('click', e => { if (e.target.id === 'senhaModal') fecharSenhaModal(); });
+
+    ['loginUser', 'loginPass'].forEach(id =>
+      document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') entrarProfessor(); })
+    );
+
+    document.getElementById('studentName').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') startQuiz();
+    });
+  </script>
+</body>
+</html>
